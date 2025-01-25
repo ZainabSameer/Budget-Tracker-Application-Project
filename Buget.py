@@ -28,3 +28,20 @@ while(True):
         else:
             print("Invalid choice. Please try again")
 
+def add_new_entry():
+    Title = input("enter title")
+    Type = input("enter “I” for Income or “E” for Expense")
+    Amount = float(input("Enter amount"))
+    date = input ("enter date (MM-DD-YYYY)")
+    #category = ["office supplies" , "salary", "rent","travel"]
+    #account =["business","personal"]
+    with open('budget.csv',mode='a') as file:
+      writer =csv.writer(file)
+      writer.writerow([Title,Type,Amount,date])
+    print("entery added")    
+
+#def Display_Account_Balance():
+    
+    
+
+main_menu ()
