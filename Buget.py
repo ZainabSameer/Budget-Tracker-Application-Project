@@ -9,7 +9,7 @@ def add_new_entry():
     Amount = float(input("Enter amount"))
     date = input ("enter date (MM-DD-YYYY)")
     while not validate_date(date):
-        date = input("Invalid date. Enter date (MM-DD-YYYY): ")
+        date = input("Invalid date. Enter date (MM-DD-YYYY) ")
     categories = ["Office Supplies", "Salary", "Rent", "Travel"]
     print("Available categories")
     for i, category in enumerate(categories, 1):
@@ -61,6 +61,9 @@ def Display_Account_Balance():
     net_balance = total_income - total_expense
     print(f"Net Balance for {choice_account}: ${net_balance:.2f}")
 
+with open('entries.csv', 'w') as file:
+    writer = csv.writer(file)
+    writer.writerow(["Title", "Type", "Amount", "Date", "Category", "Account"])
     
 #def main_menu ():
     #print(f"1. Add a New Entry:")
