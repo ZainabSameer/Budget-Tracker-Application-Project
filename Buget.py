@@ -34,9 +34,9 @@ def add_new_entry():
         print("Invalid account choice")
         return
     
-    with open('budget.csv',mode='a') as file:
+    with open('budget.csv',mode='a',newline='') as file:
         writer =csv.writer(file)
-        writer.writerow([Title,Type,Amount,date])
+        writer.writerow([Title,Type,Amount,date,selected_category,account])
     print("entery added")    
 
 def validate_date(date_str):
@@ -50,20 +50,44 @@ def Display_Account_Balance():
     choice_account = input("Enter account name to view balance or 'all' for total balance")
     total_income = 0
     total_expense = 0
-    with open('entries.csv', 'r') as file:
-        reader = csv.reader(file)
-        for row in reader:
-            if (choice_account == 'all' or row[5] == choice_account):
-                if row[1] == 'I':
-                    total_income += float(row[2])
-                elif row[1] == 'E':
-                    total_expense += float(row[2])
-    net_balance = total_income - total_expense
-    print(f"Net Balance for {choice_account}: ${net_balance:.2f}")
+    try:
+        with open('budget.csv', 'r') as file:
+            reader = csv.reader(file)
+            next(reader)  
+            for row in reader:
+                if len(row) < 6:
+                    continue 
+                print(f"Processing row: {row}")  
+                if choice_account == 'all' or row[5] == choice_account:
+                    if row[1] == 'I':
+                        total_income += float(row[2])
+                        print(f"Added to income: {row[2]}") 
+                    elif row[1] == 'E':
+                        total_expense += float(row[2])
+                        print(f"Added to expense: {row[2]}") 
+        net_balance = total_income - total_expense
+        print(f"Net Balance for {choice_account}: ${net_balance:.2f}")
+    except FileNotFoundError:
+        print("Error: 'budget.csv' file not found.")
 
-with open('entries.csv', 'w') as file:
-    writer = csv.writer(file)
-    writer.writerow(["Title", "Type", "Amount", "Date", "Category", "Account"])
+#with open('budget.csv', 'w') as file:
+    #writer = csv.writer(file)
+    #writer.writerow(["Title", "Type", "Amount", "Date", "Category", "Account"])
+
+
+def view_entries():
+    with open('budget.csv', 'r') as file:
+        reader = csv.reader(file)
+        for i, row in enumerate(reader, start=1):
+            print(f"{i}. [{row[3]}] {row[0]}: {'-' if row[1] == 'E' else '+'}${row[2]:.2f} ({row[1]}) - Category: {row[4]} - Account: {row[5]}")
+
+try:
+    with open('budget.csv', 'x', newline='') as file:  
+        writer = csv.writer(file)
+        writer.writerow(["Title", "Type", "Amount", "Date", "Category", "Account"])
+except FileExistsError:
+    pass 
+
     
 #def main_menu ():
     #print(f"1. Add a New Entry:")
