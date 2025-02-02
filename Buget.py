@@ -75,18 +75,37 @@ def Display_Account_Balance():
     #writer.writerow(["Title", "Type", "Amount", "Date", "Category", "Account"])
 
 
-def view_entries():
+def View_Entries():
     with open('budget.csv', 'r') as file:
         reader = csv.reader(file)
+        next(reader)
         for i, row in enumerate(reader, start=1):
-            print(f"{i}. [{row[3]}] {row[0]}: {'-' if row[1] == 'E' else '+'}${row[2]:.2f} ({row[1]}) - Category: {row[4]} - Account: {row[5]}")
+            if len(row) < 6:
+                continue
+            try:
+                amount = float(row[2]) 
+                print(f"{i}. [{row[3]}] {row[0]}: {'-' if row[1] == 'E' else '+'}${amount:.2f} ({row[1]}) - Category: {row[4]} - Account: {row[5]}")
+            except ValueError:
+                print(f"Invalid amount format in row {i}: {row}")
 
-try:
-    with open('budget.csv', 'x', newline='') as file:  
-        writer = csv.writer(file)
-        writer.writerow(["Title", "Type", "Amount", "Date", "Category", "Account"])
-except FileExistsError:
-    pass 
+
+def Search_Entries():
+    search= input("Enter title or date or category or account type ").strip()
+    with open('budget.csv', 'r') as file:
+        reader = csv.reader(file)
+        next(reader)
+        found = False 
+        for row in reader:
+            if len(row) < 6:
+                continue
+            if (search in row[0] or search in row[3] or
+                search in row[4] or search in row[5]):
+                amount = float(row[2])
+                sign = '-' if row[1] == 'E' else '+'
+                print(f"Search Results for {row[0]}: [{row[3]}] {row[0]}: {sign}${amount:.2f} ({row[1]}) - Category: {row[4]} - Account: {row[5]}")
+        if not found:
+            print("No entries found")
+
 
     
 #def main_menu ():
