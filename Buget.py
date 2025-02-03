@@ -2,16 +2,16 @@ import csv
 from datetime import datetime
 
 def add_new_entry():
-    Title = input("enter title")
-    Type = input("enter “I” for Income or “E” for Expense").strip().upper()
+    Title = input("enter title ")
+    Type = input("enter “I” for Income or “E” for Expense ").strip().upper()
     while Type not in ['I', 'E']:
         Type = input("Invalid input. Type (I for Income, E for Expense) ").strip().upper()
-    Amount = float(input("Enter amount"))
-    date = input ("enter date (MM-DD-YYYY)")
+    Amount = float(input("Enter amount "))
+    date = input ("enter date (MM-DD-YYYY) ")
     while not validate_date(date):
         date = input("Invalid date. Enter date (MM-DD-YYYY) ")
     categories = ["Office Supplies", "Salary", "Rent", "Travel"]
-    print("Available categories")
+    print("Available categories ")
     for i, category in enumerate(categories, 1):
         print(f"{i}. {category}")
     
@@ -47,7 +47,7 @@ def validate_date(date_str):
         return False
 
 def Display_Account_Balance():
-    choice_account = input("Enter account name to view balance or 'all' for total balance")
+    choice_account = input("Enter account name to view balance or 'all' for total balance ")
     total_income = 0
     total_expense = 0
     try:
@@ -106,8 +106,33 @@ def Search_Entries():
         if not found:
             print("No entries found")
 
+def Generate_Reports():
+    Reports = input("Generate report by 1.Date Range 2. Category 3.Account ")
+    if Reports == '1':
+        start_date = input('enter start sate (MM-DD-YYY) ')
+        end_date = input('enter end date (MM-DD-YYYY) ')
+        total_income = 0
+        total_expense = 0
+        with open('budget.csv', 'r') as file:
+            reader = csv.reader(file)
+            next(reader)
 
-    
+            for row in reader:
+                if len(row) < 6:
+                    continue     
+                row_date = datetime.strptime(row[3], "%m-%d-%Y")
+                if start_date <= row_date.strftime("%m-%d-%Y") <= end_date:
+                    if row[1] == 'I':
+                        total_income += float(row[2])
+                    elif row[1] == 'E':
+                        total_expense += float(row[2])
+        net_balance = total_income - total_expense
+        print(f"Report for Date Range ({start_date} to {end_date})")
+        print(f"total income  ${total_income:.2f}")
+        print(f"total expenses ${total_expense:.2f}")
+        print(f"net balance ${net_balance:.2f}")
+
+
 #def main_menu ():
     #print(f"1. Add a New Entry:")
     #print(f"2. Display Account Balance:")
@@ -121,7 +146,7 @@ def Search_Entries():
 #main_menu ()
 
 while(True):
-        choice = input ("Choice opation 1. To Add a New Entry , 2. To Display Account Balance , 3. To View All Entries , 4. To Search for Entries , 5.  To Generate Reports , 6.  To Manage Accounts and Categories 7. exit" )
+        choice = input ("Choice opation 1. To Add a New Entry , 2. To Display Account Balance , 3. To View All Entries , 4. To Search for Entries , 5.  To Generate Reports , 6.  To Manage Accounts and Categories 7. exit  " )
         if choice == '1':
             add_new_entry()
         elif choice == '2':
