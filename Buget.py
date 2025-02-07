@@ -128,9 +128,58 @@ def Generate_Reports():
                         total_expense += float(row[2])
         net_balance = total_income - total_expense
         print(f"Report for Date Range ({start_date} to {end_date})")
-        print(f"total income  ${total_income:.2f}")
-        print(f"total expenses ${total_expense:.2f}")
-        print(f"net balance ${net_balance:.2f}")
+        print(f"Total income  ${total_income:.2f}")
+        print(f"Total expenses ${total_expense:.2f}")
+        print(f"Net balance ${net_balance:.2f}")
+
+    elif Reports == '2':
+        category = input("enter category ")
+        total_income, total_expenses = 0, 0
+
+        with open('budget.csv', 'r') as file:
+            reader = csv.reader(file)
+            next(reader)
+            
+            for row in reader:
+                if len(row) < 6 or row[4] != category:
+                    continue
+                
+                if row[1] == 'I':
+                    total_income += float(row[2])
+                elif row[1] == 'E':
+                    total_expenses += float(row[2])
+        
+        net_balance = total_income - total_expenses
+        print(f"Report for Category '{category}':")
+        print(f"Total Income: ${total_income:.2f}")
+        print(f"Total Expenses: ${total_expenses:.2f}")
+        print(f"Net Balance: ${net_balance:.2f}")
+
+    elif Reports == '3':
+        account = input("Enter account (Personal Account) OR (Business Account) ")
+        total_income, total_expenses = 0, 0
+
+        with open('budget.csv', 'r') as file:
+            reader = csv.reader(file)
+            next(reader) 
+            
+            for row in reader:
+                if len(row) < 6 or row[5] != account:
+                    continue
+                
+                if row[1] == 'I':
+                    total_income += float(row[2])
+                elif row[1] == 'E':
+                    total_expenses += float(row[2])
+        
+        net_balance = total_income - total_expenses
+        print(f"Report for Account '{account}':")
+        print(f"Total Income: ${total_income:.2f}")
+        print(f"Total Expenses: ${total_expenses:.2f}")
+        print(f"Net Balance: ${net_balance:.2f}")
+
+    else:
+        print("Invalid choice. Please try again!!")
 
 
 #def main_menu ():
