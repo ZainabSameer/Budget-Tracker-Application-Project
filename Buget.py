@@ -1,9 +1,11 @@
 import csv
 from datetime import datetime
+#ACCOUNTS_CSV = 'accounts.csv'
+
 
 def add_new_entry():
     Title = input("enter title ")
-    Type = input("enter “I” for Income or “E” for Expense ").strip().upper()
+    Type = input('enter "I" for Income or "E" for Expense ').strip().upper()
     while Type not in ['I', 'E']:
         Type = input("Invalid input. Type (I for Income, E for Expense) ").strip().upper()
     Amount = float(input("Enter amount "))
@@ -106,6 +108,7 @@ def Search_Entries():
         if not found:
             print("No entries found")
 
+
 def Generate_Reports():
     Reports = input("Generate report by 1.Date Range 2. Category 3.Account ")
     if Reports == '1':
@@ -181,7 +184,51 @@ def Generate_Reports():
     else:
         print("Invalid choice. Please try again!!")
 
+def load_accounts():
+    try:
+        with open('ACCOUNTS.txt', 'r', newline='') as file:
+            return [line.strip() for line in file]
+    except FileNotFoundError:
+        return [] 
 
+def save_accounts():
+    with open('ACCOUNTS.txt', 'w', newline='') as file:
+        writer = csv.writer(file)
+        for account in accounts:
+            writer.writerow([account])
+accounts = load_accounts()
+def Manage():
+    manage = input("what you want to manage 1. Accounts 2. Categories  choose the numnber").strip()
+    if manage == '1':
+        account_action = input("Choose 1. Add new account 2.Edit account 3. Delete account ").strip()
+        
+        if account_action == '1':  
+            new_account = input("Enter new account name  ")
+            accounts.append(new_account)
+            save_accounts()          
+            print(f"Added New Account: {new_account}")
+        
+        elif account_action == '2':
+            print("Existing accounts:", accounts)
+            old_account = input("Enter account name to edit: ")
+            if old_account in accounts:
+                new_account = input("Enter new name: ")
+                accounts[accounts.index(old_account)] = new_account
+                save_accounts()        
+                print(f"Renamed Account: {old_account} to {new_account}")
+            else:
+                print("Account not found")
+        
+        elif account_action == '3': 
+            print("Existing accounts", accounts)
+            account_to_delete = input("Enter account name to delete ")
+            if account_to_delete in accounts:
+                accounts.remove(account_to_delete)
+                save_accounts()  
+                print(f"Deleted Account: {account_to_delete}")
+            else:
+                print("Account not found")
+        
 #def main_menu ():
     #print(f"1. Add a New Entry:")
     #print(f"2. Display Account Balance:")
