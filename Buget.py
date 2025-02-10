@@ -190,13 +190,28 @@ def load_accounts():
             return [line.strip() for line in file]
     except FileNotFoundError:
         return [] 
-
+    
+def load_categories():
+    try:
+        with open('CATEGORIES_txt', 'r') as file:
+            return [line.strip() for line in file]
+    except FileNotFoundError:
+        return []
+    
 def save_accounts():
     with open('ACCOUNTS.txt', 'w', newline='') as file:
         writer = csv.writer(file)
         for account in accounts:
             writer.writerow([account])
+
+def save_categories():
+    with open('CATEGORIES_txt', 'w', newline='') as file:
+        writer = csv.writer(file)
+        for category in categories:
+            writer.writerow([category])
 accounts = load_accounts()
+categories = load_categories()
+
 def Manage():
     manage = input("what you want to manage 1. Accounts 2. Categories  choose the numnber").strip()
     if manage == '1':
@@ -228,7 +243,38 @@ def Manage():
                 print(f"Deleted Account: {account_to_delete}")
             else:
                 print("Account not found")
+    elif manage == '2':  
+        category_action = input("Choose 1. Add new category 2.Edit category 3. Delete category  ").strip()
         
+        if category_action == '1':  
+            new_category = input("Enter new category name: ")
+            categories.append(new_category)
+            print(f"Added New Category: {new_category}")
+            save_categories() 
+        
+        elif category_action == '2':
+            print("Existing categories:", categories)
+            old_category = input("Enter category name to edit: ")
+            if old_category in categories:
+                new_category = input("Enter new name: ")
+                categories[categories.index(old_category)] = new_category
+                print(f"Renamed Category: {old_category} to {new_category}")
+                save_categories() 
+            else:
+                print("Category not found.")
+        
+        elif category_action == '3': 
+            print("Existing categories:", categories)
+            category_to_delete = input("Enter category name to delete: ")
+            if category_to_delete in categories:
+                categories.remove(category_to_delete)
+                print(f"Deleted Category: {category_to_delete}")
+                save_categories()
+            else:
+                print("Category not found.")
+    
+    else:
+        print("Invalid choice. Please try again.")   
 #def main_menu ():
     #print(f"1. Add a New Entry:")
     #print(f"2. Display Account Balance:")
