@@ -12,34 +12,38 @@ def add_new_entry():
     date = input ("enter date (MM-DD-YYYY) ")
     while not validate_date(date):
         date = input("Invalid date. Enter date (MM-DD-YYYY) ")
-    categories = ["Office Supplies", "Salary", "Rent", "Travel"]
-    print("Available categories ")
+
+    categories = load_categories()
+    
+    print("Available categories:")
+
     for i, category in enumerate(categories, 1):
         print(f"{i}. {category}")
     
-    category_choice = int(input("Choose a category by number ")) - 1
+    category_choice = int(input("Choose a category by number: ")) - 1
     selected_category = categories[category_choice] if 0 <= category_choice < len(categories) else None
 
     if selected_category is None:
         print("Invalid category choice")
         return
-
-    accounts = ["Business Account", "Personal Account"]
-    print("Available accounts")
+    accounts = load_accounts()
+    
+    print("Available accounts:")
     for i, account in enumerate(accounts, 1):
         print(f"{i}. {account}")
     
-    account_choice = int(input("Choose an account by number")) - 1
+    account_choice = int(input("Choose an account by number: ")) - 1
     account = accounts[account_choice] if 0 <= account_choice < len(accounts) else None
 
     if account is None:
         print("Invalid account choice")
         return
     
-    with open('budget.csv',mode='a',newline='') as file:
-        writer =csv.writer(file)
-        writer.writerow([Title,Type,Amount,date,selected_category,account])
-    print("entery added")    
+    with open('budget.csv', mode='a', newline='') as file:
+        writer = csv.writer(file)
+        writer.writerow([Title, Type, Amount, date, selected_category, account])
+    print("Entry added")
+
 
 def validate_date(date_str):
     try:
@@ -57,25 +61,27 @@ def Display_Account_Balance():
             reader = csv.reader(file)
             next(reader)  
             for row in reader:
-                if len(row) < 6:
-                    continue 
                 print(f"Processing row: {row}")  
+                if len(row) < 6:
+                    print("Row has insufficient columns.")  
+                    continue
+                
                 if choice_account == 'all' or row[5] == choice_account:
+                    amount = float(row[2])  
                     if row[1] == 'I':
-                        total_income += float(row[2])
-                        print(f"Added to income: {row[2]}") 
+                        total_income += amount
+                        print(f"Added to income: {amount}")
                     elif row[1] == 'E':
-                        total_expense += float(row[2])
-                        print(f"Added to expense: {row[2]}") 
+                        total_expense += amount
+                        print(f"Added to expense: {amount}") 
+
         net_balance = total_income - total_expense
         print(f"Net Balance for {choice_account}: ${net_balance:.2f}")
+    
     except FileNotFoundError:
         print("Error: 'budget.csv' file not found.")
-
-#with open('budget.csv', 'w') as file:
-    #writer = csv.writer(file)
-    #writer.writerow(["Title", "Type", "Amount", "Date", "Category", "Account"])
-
+    except ValueError as e:
+        print(f"Value error: {e}")  
 
 def View_Entries():
     with open('budget.csv', 'r') as file:
@@ -209,11 +215,12 @@ def save_categories():
         writer = csv.writer(file)
         for category in categories:
             writer.writerow([category])
+
 accounts = load_accounts()
 categories = load_categories()
 
 def Manage():
-    manage = input("what you want to manage 1. Accounts 2. Categories  choose the numnber").strip()
+    manage = input("what do you want to manage 1. Accounts 2. Categories  choose the numnber").strip()
     if manage == '1':
         account_action = input("Choose 1. Add new account 2.Edit account 3. Delete account ").strip()
         
