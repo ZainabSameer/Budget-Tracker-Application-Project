@@ -40,7 +40,7 @@ def add_new_entry():
     with open('budget.csv', mode='a', newline='') as file:
         writer = csv.writer(file)
         writer.writerow([Title, Type, Amount, date, selected_category, account])
-    print("Entry added")
+    print(f"Entry added: {Title}, Type: {Type}, Amount: ${Amount:.2f}, Date: {date}, Category: {selected_category}, Account: {account}")
 
 
 def validate_date(date_str):
@@ -106,6 +106,7 @@ def Search_Entries():
                 continue
             if (search in row[0] or search in row[3] or
                 search in row[4] or search in row[5]):
+                found=True
                 amount = float(row[2])
                 sign = '-' if row[1] == 'E' else '+'
                 print(f"Search Results for {row[0]}: [{row[3]}] {row[0]}: {sign}${amount:.2f} ({row[1]}) - Category: {row[4]} - Account: {row[5]}")
@@ -116,8 +117,20 @@ def Search_Entries():
 def Generate_Reports():
     Reports = input("Generate report by 1.Date Range 2. Category 3.Account ")
     if Reports == '1':
-        start_date = input('enter start sate (MM-DD-YYY) ')
+        start_date = input('enter start sate (MM-DD-YYYY) ')
         end_date = input('enter end date (MM-DD-YYYY) ')
+
+        try:
+            start_date_obj = datetime.strptime(start_date, "%m-%d-%Y")
+            end_date_obj = datetime.strptime(end_date, "%m-%d-%Y")
+            if start_date_obj >= end_date_obj:
+                print("Error: Start date must be before the end date.")
+                return 
+
+        except ValueError:
+            print("Invalid date format. Please use MM-DD-YYYY.")
+            return 
+        
         total_income = 0
         total_expense = 0
         with open('budget.csv', 'r') as file:
@@ -197,7 +210,7 @@ def load_accounts():
     
 def load_categories():
     try:
-        with open('CATEGORIES_txt', 'r') as file:
+        with open('CATEGORIES.txt', 'r') as file:
             return [line.strip() for line in file]
     except FileNotFoundError:
         return []
@@ -209,7 +222,7 @@ def save_accounts():
             writer.writerow([account])
 
 def save_categories():
-    with open('CATEGORIES_txt', 'w', newline='') as file:
+    with open('CATEGORIES.txt', 'w', newline='') as file:
         writer = csv.writer(file)
         for category in categories:
             writer.writerow([category])
@@ -218,7 +231,7 @@ accounts = load_accounts()
 categories = load_categories()
 
 def Manage():
-    manage = input("what do you want to manage 1. Accounts 2. Categories  choose the numnber").strip()
+    manage = input("What do you want to manage? 1. Accounts 2. Categories, choose the number: ").strip()
     if manage == '1':
         account_action = input("Choose 1. Add new account 2.Edit account 3. Delete account ").strip()
         
@@ -237,8 +250,7 @@ def Manage():
                 save_accounts()        
                 print(f"Renamed Account: {old_account} to {new_account}")
             else:
-                print("Account not found")
-        
+                print("Account not found. Please check the account name")
         elif account_action == '3': 
             print("Existing accounts", accounts)
             account_to_delete = input("Enter account name to delete ")
@@ -247,7 +259,8 @@ def Manage():
                 save_accounts()  
                 print(f"Deleted Account: {account_to_delete}")
             else:
-                print("Account not found")
+                print("Account not found. Please ensure you entered the correct name.")
+                
     elif manage == '2':  
         category_action = input("Choose 1. Add new category 2.Edit category 3. Delete category  ").strip()
         
@@ -266,7 +279,7 @@ def Manage():
                 print(f"Renamed Category: {old_category} to {new_category}")
                 save_categories() 
             else:
-                print("Category not found.")
+                print("Category not found.Please check the category name")
         
         elif category_action == '3': 
             print("Existing categories:", categories)
@@ -276,13 +289,13 @@ def Manage():
                 print(f"Deleted Category: {category_to_delete}")
                 save_categories()
             else:
-                print("Category not found.")
+                print("Category not found.Please check the category name")
     
     else:
         print("Invalid choice. Please try again.")   
 
 while(True):
-        choice = input ("Choice opation 1. To Add a New Entry , 2. To Display Account Balance , 3. To View All Entries , 4. To Search for Entries , 5.  To Generate Reports , 6.  To Manage Accounts and Categories 7. exit  " )
+        choice = input ("Choice option 1. To Add a New Entry , 2. To Display Account Balance , 3. To View All Entries , 4. To Search for Entries , 5.  To Generate Reports , 6.  To Manage Accounts and Categories 7. exit  " )
         if choice == '1':
             add_new_entry()
         elif choice == '2':
